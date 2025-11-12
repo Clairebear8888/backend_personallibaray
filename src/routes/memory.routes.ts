@@ -1,9 +1,10 @@
-const express = require("express");
+import express, { Request, Response, NextFunction } from "express";
+import prisma from "../db";
+
 const router = express.Router();
-const prisma = require("../db/index");
 
 // GET /api/memories - Get all memories
-router.get("/", async (req, res, next) => {
+router.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const memories = await prisma.memory.findMany({
       include: { country: true },
@@ -16,7 +17,7 @@ router.get("/", async (req, res, next) => {
 });
 
 // GET /api/memories/:id - Get a single memory
-router.get("/:id", async (req, res, next) => {
+router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
     const memory = await prisma.memory.findUnique({
@@ -35,7 +36,7 @@ router.get("/:id", async (req, res, next) => {
 });
 
 // POST /api/memories - Create a new memory
-router.post("/", async (req, res, next) => {
+router.post("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { title, description, location, countryId } = req.body;
 
@@ -56,7 +57,7 @@ router.post("/", async (req, res, next) => {
 });
 
 // PUT /api/memories/:id - Update a memory
-router.put("/:id", async (req, res, next) => {
+router.put("/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
     const { title, description, location } = req.body;
@@ -74,18 +75,21 @@ router.put("/:id", async (req, res, next) => {
 });
 
 // DELETE /api/memories/:id - Delete a memory
-router.delete("/:id", async (req, res, next) => {
-  try {
-    const { id } = req.params;
+router.delete(
+  "/:id",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
 
-    await prisma.memory.delete({
-      where: { id: Number(id) },
-    });
+      await prisma.memory.delete({
+        where: { id: Number(id) },
+      });
 
-    res.status(204).send();
-  } catch (error) {
-    next(error);
+      res.status(204).send();
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
-module.exports = router;
+export default router;

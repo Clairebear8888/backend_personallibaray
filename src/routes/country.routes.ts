@@ -1,12 +1,13 @@
-const express = require("express");
+import express, { Request, Response, NextFunction } from "express";
+import prisma from "../db/index";
+
 const router = express.Router();
-const prisma = require("../db/index");
 
 // GET /api/countries - Get all countries
-router.get("/", async (req, res, next) => {
+router.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const countries = await prisma.country.findMany({
-      include: { memories: true }, // Include related memories
+      include: { memories: true },
       orderBy: { createdAt: "desc" },
     });
     res.json(countries);
@@ -16,7 +17,7 @@ router.get("/", async (req, res, next) => {
 });
 
 // GET /api/countries/:id - Get a single country by ID
-router.get("/:id", async (req, res, next) => {
+router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
     const country = await prisma.country.findUnique({
@@ -35,7 +36,7 @@ router.get("/:id", async (req, res, next) => {
 });
 
 // POST /api/countries - Create a new country
-router.post("/", async (req, res, next) => {
+router.post("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { name, favoriteCity, favoriteFood, visitedDate, flagEmoji } =
       req.body;
@@ -57,7 +58,7 @@ router.post("/", async (req, res, next) => {
 });
 
 // PUT /api/countries/:id - Update a country
-router.put("/:id", async (req, res, next) => {
+router.put("/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
     const { name, favoriteCity, favoriteFood, visitedDate, flagEmoji } =
@@ -81,18 +82,21 @@ router.put("/:id", async (req, res, next) => {
 });
 
 // DELETE /api/countries/:id - Delete a country
-router.delete("/:id", async (req, res, next) => {
-  try {
-    const { id } = req.params;
+router.delete(
+  "/:id",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
 
-    await prisma.country.delete({
-      where: { id: Number(id) },
-    });
+      await prisma.country.delete({
+        where: { id: Number(id) },
+      });
 
-    res.status(204).send();
-  } catch (error) {
-    next(error);
+      res.status(204).send();
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
-module.exports = router;
+export default router;
