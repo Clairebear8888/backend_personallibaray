@@ -1,0 +1,37 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Country {
+  id             Int      @id @default(autoincrement())
+  name           String   @unique
+  favoriteCity   String?  
+  favoriteFood   String?  
+  visitedDate    DateTime? 
+  flagEmoji      String?  // Optional: store country flag emoji like 🇫🇷
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  memories       Memory[] // One country can have many memories
+}
+
+model Memory {
+  id          Int      @id @default(autoincrement())
+  title       String   // Short title for the memory
+  description String   @db.Text // Detailed description of the memory
+  location    String?  // Specific location/city where memory happened
+  countryId   Int      // Foreign key to Country
+  country     Country  @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
