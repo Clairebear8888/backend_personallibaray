@@ -1,5 +1,7 @@
-module.exports = (app) => {
-  app.use((req, res) => {
+import { Application, Response, Request } from "express";
+
+module.exports = (app: Application) => {
+  app.use((req: Request, res: Response) => {
     // this middleware runs whenever requested page is not available
     res.status(404).json({
       message:
@@ -7,7 +9,7 @@ module.exports = (app) => {
     });
   });
 
-  app.use((err, req, res) => {
+  app.use((err: Error, req: Request, res: Response) => {
     // whenever you call next(err), this middleware will handle the error
     // always logs the error
     console.error("ERROR", req.method, req.path, err);
